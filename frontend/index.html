@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBTB POS - Point of Sale System</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Complete Point of Sale system for CBTB with inventory management, staff tracking, and analytics">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CBTB POS">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icon-167x167.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-lg">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-2xl font-bold">CBTB POS</h1>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-store"></i>
+                    <select id="branchSelector" class="bg-blue-700 text-white px-3 py-1 rounded border-none">
+                        <option value="vito-cruz">Vito Cruz Taft</option>
+                        <option value="sterling-makati">Sterling Makati</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm">
+                    <div id="currentDateTime"></div>
+                    <div class="text-green-300">System Online</div>
+                </div>
+                <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="flex space-x-1 p-2">
+            <button class="nav-btn active" data-page="pos">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Point of Sale</span>
+            </button>
+            <button class="nav-btn" data-page="inventory">
+                <i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </button>
+            <button class="nav-btn" data-page="analytics">
+                <i class="fas fa-chart-bar"></i>
+                <span>Analytics</span>
+            </button>
+            <button class="nav-btn" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-btn" data-page="staff">
+                <i class="fas fa-users"></i>
+                <span>Staff</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4">
+        <!-- POS Page -->
+        <div id="pos-page" class="page-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Menu Items -->
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold mb-4">Point of Sale</h2>
+                    <p class="text-gray-600 mb-6">Process orders and manage sales</p>
+                    
+                    <!-- Menu Categories -->
+                    <div class="mb-6">
+                        <div class="flex space-x-2 mb-4">
+                            <button class="category-btn active" data-category="buckets">BB Buckets</button>
+                            <button class="category-btn" data-category="addons">Add-ons</button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Items Grid -->
+                    <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- BB Buckets -->
+                        <div class="menu-item" data-category="buckets" data-price="128" data-name="BB Bucket">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">BB Bucket</h3>
+                                    <p class="text-sm text-gray-600 mb-2">6 pcs • ₱128</p>
+                                    <p class="text-xs text-gray-500">Choco Chip only</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="buckets" data-price="198" data-name="Regular">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Regular</h3>
+                                    <p class="text-sm text-gray-600 mb-2">10 pcs • ₱198</p>
+                                    <p class="text-xs text-gray-500">Single flavor</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="buckets" data-price="308" data-name="Large">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Large</h3>
+                                    <p class="text-sm text-gray-600 mb-2">16 pcs • ₱308</p>
+                                    <p class="text-xs text-gray-500">Single flavor</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="buckets" data-price="418" data-name="Giant">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Giant</h3>
+                                    <p class="text-sm text-gray-600 mb-2">22 pcs • ₱418</p>
+                                    <p class="text-xs text-gray-500">Assorted</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="buckets" data-price="528" data-name="Reusable Giant">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Reusable Giant</h3>
+                                    <p class="text-sm text-gray-600 mb-2">24 pcs • ₱528</p>
+                                    <p class="text-xs text-gray-500">Assorted</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="buckets" data-price="1078" data-name="Reusable Monster">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Reusable Monster</h3>
+                                    <p class="text-sm text-gray-600 mb-2">50 pcs • ₱1078</p>
+                                    <p class="text-xs text-gray-500">Assorted</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add-ons -->
+                        <div class="menu-item" data-category="addons" data-price="35" data-name="Bottled Water">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">💧</div>
+                                    <h3 class="font-semibold text-lg">Bottled Water</h3>
+                                    <p class="text-sm text-gray-600 mb-2">₱35</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-item" data-category="addons" data-price="580" data-name="Cookie Bouquet">
+                            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🍪</div>
+                                    <h3 class="font-semibold text-lg">Cookie Bouquet</h3>
+                                    <p class="text-sm text-gray-600 mb-2">₱580</p>
+                                    <button class="add-to-cart-btn w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart Section -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+                        <h3 class="text-xl font-bold mb-4">🛒 Cart</h3>
+                        
+                        <div id="cart-items" class="space-y-2 mb-4">
+                            <div class="text-gray-500 text-center py-8">No items in cart</div>
+                        </div>
+
+                        <div class="space-y-3 border-t pt-4">
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="seniorDiscount" class="mr-2">
+                                    <span class="text-sm">Senior/PWD Discount (20%)</span>
+                                </label>
+                            </div>
+                            
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">₱0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>VAT (12%):</span>
+                                    <span id="vat">₱0.00</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-lg">
+                                    <span>Total:</span>
+                                    <span id="total">₱0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 pt-4">
+                                <button id="processOrderBtn" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-semibold">
+                                    Process Order
+                                </button>
+                                <button id="clearOrderBtn" class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600">
+                                    Clear Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Page -->
+        <div id="inventory-page" class="page-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Inventory Management</h2>
+            <p class="text-gray-600 mb-6">Track stock levels and manage inventory</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📦</div>
+                        <div class="text-2xl font-bold">5</div>
+                        <div class="text-sm text-gray-600">Total Flavors</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">⚠️</div>
+                        <div class="text-2xl font-bold">0</div>
+                        <div class="text-sm text-gray-600">Low Stock Alerts</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">⏰</div>
+                        <div class="text-2xl font-bold">0</div>
+                        <div class="text-sm text-gray-600">Expiry Alerts</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">✅</div>
+                        <div class="text-2xl font-bold">10000g</div>
+                        <div class="text-sm text-gray-600">Total Batter Stock</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Batter Inventory</h3>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded mb-4">+ Add Stock</button>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2">Flavor</th>
+                                    <th class="text-left py-2">Current Stock</th>
+                                    <th class="text-left py-2">Status</th>
+                                    <th class="text-left py-2">Expiry Date</th>
+                                    <th class="text-left py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="py-2">Chocolate Chip</td>
+                                    <td class="py-2">2.5kg</td>
+                                    <td class="py-2"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Good</span></td>
+                                    <td class="py-2">2024-02-15</td>
+                                    <td class="py-2">
+                                        <button class="text-blue-600 hover:text-blue-800">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Packaging Inventory</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">BB Buckets</div>
+                                <div class="text-sm text-gray-600">87% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">87 pcs</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Regular Buckets</div>
+                                <div class="text-sm text-gray-600">94% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">94 pcs</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Large Buckets</div>
+                                <div class="text-sm text-gray-600">78% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">78 pcs</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Giant Buckets</div>
+                                <div class="text-sm text-gray-600">65% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">65 pcs</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Reusable Buckets</div>
+                                <div class="text-sm text-gray-600">46% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">23 pcs</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Paper Bags</div>
+                                <div class="text-sm text-gray-600">12% remaining</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold">12 pcs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div id="analytics-page" class="page-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Sales Analytics</h2>
+            <p class="text-gray-600 mb-6">View sales data and business metrics</p>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex space-x-2">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded">Last 7 days</button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded">Last 30 days</button>
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded">Last 3 months</button>
+                </div>
+                <button class="bg-green-600 text-white px-4 py-2 rounded">📥 Export</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">💰</div>
+                        <div class="text-2xl font-bold">₱0.00</div>
+                        <div class="text-sm text-gray-600">Daily Revenue</div>
+                        <div class="text-green-600 text-sm">+24.5%</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📋</div>
+                        <div class="text-2xl font-bold">0</div>
+                        <div class="text-sm text-gray-600">Orders Today</div>
+                        <div class="text-green-600 text-sm">+12.5%</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📊</div>
+                        <div class="text-2xl font-bold">₱0.00</div>
+                        <div class="text-sm text-gray-600">Average Order</div>
+                        <div class="text-red-600 text-sm">-3.1%</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <div class="text-2xl font-bold">73%</div>
+                        <div class="text-sm text-gray-600">Monthly Target</div>
+                        <div class="text-sm text-gray-600">₱278K / ₱380K</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Daily Sales Trend</h3>
+                    <div class="h-64 bg-gray-100 rounded flex items-center justify-center">
+                        <div class="text-gray-500">📊 Sales Chart<br>Chart js implementation needed</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Top Selling Products</h3>
+                    <div class="text-center text-gray-500 py-8">
+                        No sales data available
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Monthly OPEX Tracker</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">₱45,230.00</div>
+                        <div class="text-sm text-gray-600">Ingredients</div>
+                        <div class="text-xs text-gray-500">32% of revenue</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600">₱28,500.00</div>
+                        <div class="text-sm text-gray-600">Labor</div>
+                        <div class="text-xs text-gray-500">20% of revenue</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-600">₱8,750.00</div>
+                        <div class="text-sm text-gray-600">Utilities</div>
+                        <div class="text-xs text-gray-500">6% of revenue</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-600">₱12,340.00</div>
+                        <div class="text-sm text-gray-600">Other</div>
+                        <div class="text-xs text-gray-500">9% of revenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Business Dashboard</h2>
+            <p class="text-gray-600 mb-6">Overview of business operations</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">⚠️</div>
+                        <div class="text-sm text-gray-600">Low Stock Alerts</div>
+                        <div class="text-lg font-semibold">0 items need reordering</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📋</div>
+                        <div class="text-sm text-gray-600">Shift Handover</div>
+                        <div class="text-lg font-semibold">Complete inventory check</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📄</div>
+                        <div class="text-sm text-gray-600">Daily Report</div>
+                        <div class="text-lg font-semibold">Generate sales summary</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">⚙️</div>
+                        <div class="text-sm text-gray-600">System Settings</div>
+                        <div class="text-lg font-semibold">Configure POS system</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Business Growth Overview</h3>
+                    <div class="h-64 bg-gray-100 rounded flex items-center justify-center">
+                        <div class="text-gray-500">📈 Growth Trends Chart<br>Revenue • Orders • Customers</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Key Metrics</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span>Revenue Growth</span>
+                            <span class="text-green-600 font-semibold">+24.5%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Customer Retention</span>
+                            <span class="text-blue-600 font-semibold">89%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Cost Efficiency</span>
+                            <span class="text-green-600 font-semibold">92%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">System Alerts</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded">
+                            <div class="text-blue-600">📋</div>
+                            <div>
+                                <div class="font-semibold">Auto Reorder</div>
+                                <div class="text-sm text-gray-600">Supplier notified for inventory restock</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Staff Shift Management</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold">Current Shift</h4>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <span class="font-semibold">Maria Santos</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Active</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Inventory Status</h4>
+                            <div class="text-sm text-gray-600 mt-2">
+                                <div>Last Check: 2:00 PM</div>
+                                <div>Discrepancies: 0 items</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Next Actions</h4>
+                            <div class="text-sm text-gray-600 mt-2">
+                                <div>• Complete shift handover</div>
+                                <div>• Reconcile inventory</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Page -->
+        <div id="staff-page" class="page-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Staff Management</h2>
+            <p class="text-gray-600 mb-6">Manage staff time in/out and attendance</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Time In/Out</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Staff Member</label>
+                                <select id="staffSelect" class="w-full p-2 border border-gray-300 rounded">
+                                    <option value="">Select staff member</option>
+                                    <option value="maria-santos">Maria Santos - Cashier</option>
+                                    <option value="juan-dela-cruz">Juan Dela Cruz - Baker</option>
+                                    <option value="ana-garcia">Ana Garcia - Manager</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="timeInBtn" class="bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 font-semibold">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Time In
+                            </button>
+                            <button id="timeOutBtn" class="bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 font-semibold">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Time Out
+                            </button>
+                        </div>
+                        
+                        <div id="currentStatus" class="text-center p-4 bg-gray-50 rounded">
+                            <div class="text-gray-500">No staff selected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Today's Attendance</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded">
+                            <div>
+                                <div class="font-semibold">Maria Santos</div>
+                                <div class="text-sm text-gray-600">Cashier</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600">Time In: 8:00 AM</div>
+                                <div class="text-sm text-gray-600">Status: <span class="text-green-600">Active</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <div>
+                                <div class="font-semibold">Juan Dela Cruz</div>
+                                <div class="text-sm text-gray-600">Baker</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600">Time In: 7:30 AM</div>
+                                <div class="text-sm text-gray-600">Time Out: 4:30 PM</div>
+                                <div class="text-sm text-gray-600">Status: <span class="text-gray-600">Completed</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-red-50 rounded">
+                            <div>
+                                <div class="font-semibold">Ana Garcia</div>
+                                <div class="text-sm text-gray-600">Manager</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600">Status: <span class="text-red-600">Absent</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Staff Directory</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-2">Name</th>
+                                <th class="text-left py-2">Position</th>
+                                <th class="text-left py-2">Branch</th>
+                                <th class="text-left py-2">Status</th>
+                                <th class="text-left py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="py-2">Maria Santos</td>
+                                <td class="py-2">Cashier</td>
+                                <td class="py-2">Vito Cruz Taft</td>
+                                <td class="py-2"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Active</span></td>
+                                <td class="py-2">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                    <button class="text-red-600 hover:text-red-800">Delete</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2">Juan Dela Cruz</td>
+                                <td class="py-2">Baker</td>
+                                <td class="py-2">Vito Cruz Taft</td>
+                                <td class="py-2"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Completed</span></td>
+                                <td class="py-2">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                    <button class="text-red-600 hover:text-red-800">Delete</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2">Ana Garcia</td>
+                                <td class="py-2">Manager</td>
+                                <td class="py-2">Sterling Makati</td>
+                                <td class="py-2"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Absent</span></td>
+                                <td class="py-2">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                    <button class="text-red-600 hover:text-red-800">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cashier Name Bar (Bottom Left) -->
+    <div id="cashierBar" class="fixed bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-user"></i>
+            <span id="cashierName">Maria Santos</span>
+            <span class="text-xs">(Cashier)</span>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Staff Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Staff ID</label>
+                    <input type="text" id="staffId" class="w-full p-3 border border-gray-300 rounded" placeholder="Enter staff ID" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold">
+                    Login
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-600">Demo Credentials:</p>
+                <p class="text-xs text-gray-500">Staff ID: maria.santos | Password: 123456</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="text-6xl mb-4">✅</div>
+                <h2 class="text-2xl font-bold mb-4">Order Processed Successfully!</h2>
+                <p class="text-gray-600 mb-6">Order #<span id="orderNumber">12345</span></p>
+                <div class="text-left bg-gray-50 p-4 rounded mb-6">
+                    <div class="font-semibold mb-2">Order Summary:</div>
+                    <div id="orderSummary" class="text-sm text-gray-600"></div>
+                    <div class="border-t pt-2 mt-2">
+                        <div class="flex justify-between font-semibold">
+                            <span>Total:</span>
+                            <span id="orderTotal">₱0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="closeOrderModal" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html> 

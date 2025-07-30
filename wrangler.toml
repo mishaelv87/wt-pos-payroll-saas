@@ -1,0 +1,136 @@
+# Cloudflare Workers Configuration for WT POS & Payroll SaaS
+# This configuration uses the free tier of Cloudflare Workers and D1 Database
+
+name = "wt-pos-payroll-saas"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+APP_NAME = "WT POS & Payroll SaaS"
+APP_VERSION = "1.0.0"
+SUPPORT_EMAIL = "support@wisetrackpos.com"
+COMPANY_NAME = "WiseTrack POS"
+COUNTRY = "PH"
+TIMEZONE = "Asia/Manila"
+CURRENCY = "PHP"
+LANGUAGE = "en"
+DEFAULT_LOCALE = "en-PH"
+
+# D1 Database configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "wt-pos-payroll-db"
+database_id = "your-database-id-here"
+
+# KV Namespace for caching and session storage
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id-here"
+preview_id = "your-preview-kv-namespace-id-here"
+
+# R2 Storage for file uploads (receipts, documents, etc.)
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "wt-pos-payroll-storage"
+preview_bucket_name = "wt-pos-payroll-storage-preview"
+
+# Environment-specific configurations
+[env.development]
+name = "wt-pos-payroll-saas-dev"
+vars = { ENVIRONMENT = "development" }
+
+[env.staging]
+name = "wt-pos-payroll-saas-staging"
+vars = { ENVIRONMENT = "staging" }
+
+[env.production]
+name = "wt-pos-payroll-saas"
+vars = { ENVIRONMENT = "production" }
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Deployment settings
+[build.upload]
+format = "service-worker"
+
+# Route configuration for custom domain
+# Uncomment and configure when you have a custom domain
+# [[routes]]
+# pattern = "your-domain.com/*"
+# zone_name = "your-domain.com"
+
+# Cron triggers for automated tasks
+[triggers]
+crons = [
+  "0 0 * * *",  # Daily at midnight - backup and maintenance
+  "0 6 * * 1",  # Weekly on Monday at 6 AM - payroll processing
+  "0 2 * * *"   # Daily at 2 AM - analytics aggregation
+]
+
+# Security headers
+[headers]
+# Security headers for all responses
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://api.cloudflare.com;"
+
+# Cache settings for static assets
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# API routes caching
+[[headers]]
+for = "/api/*"
+[headers.values]
+Cache-Control = "no-cache, no-store, must-revalidate"
+Pragma = "no-cache"
+Expires = "0"
+
+# Development settings
+[dev]
+port = 8787
+local = true
+persist = true
+
+# Miniflare configuration for local development
+[miniflare]
+kv_persist = true
+d1_persist = true
+r2_persist = true
+
+# Logging configuration
+[log]
+level = "info"
+
+# Performance settings
+[performance]
+# Enable streaming responses for better performance
+streaming = true
+
+# Error handling
+[error]
+# Custom error pages
+404 = "/404.html"
+500 = "/500.html"
+
+# Analytics and monitoring
+[analytics]
+# Enable Cloudflare Analytics (free tier)
+enabled = true
+
+# Web Analytics
+[web_analytics]
+# Enable Web Analytics (free tier)
+enabled = true 

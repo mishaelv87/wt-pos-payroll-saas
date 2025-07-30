@@ -1,0 +1,484 @@
+/* Custom Styles for CBTB POS System */
+
+/* Global Styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation Styles */
+.nav-btn {
+    @apply flex flex-col items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+    min-width: 80px;
+}
+
+.nav-btn.active {
+    @apply bg-blue-600 text-white;
+}
+
+.nav-btn:not(.active) {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+.nav-btn i {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Page Content */
+.page-content {
+    display: block;
+}
+
+.page-content.hidden {
+    display: none;
+}
+
+/* Menu Categories */
+.category-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+}
+
+.category-btn.active {
+    @apply bg-blue-600 text-white;
+}
+
+.category-btn:not(.active) {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+}
+
+/* Menu Items */
+.menu-item {
+    transition: transform 0.2s ease-in-out;
+}
+
+.menu-item:hover {
+    transform: translateY(-2px);
+}
+
+.add-to-cart-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.add-to-cart-btn:hover {
+    transform: scale(1.02);
+}
+
+/* Cart Items */
+.cart-item {
+    @apply flex items-center justify-between p-3 bg-gray-50 rounded-lg;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.quantity-controls {
+    @apply flex items-center space-x-2;
+}
+
+.quantity-btn {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200;
+}
+
+.quantity-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Cashier Bar */
+#cashierBar {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Animations */
+#loginModal, #orderModal {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-btn {
+        min-width: 60px;
+        font-size: 0.75rem;
+    }
+    
+    .nav-btn i {
+        font-size: 1rem;
+    }
+    
+    .nav-btn span {
+        display: none;
+    }
+    
+    #cashierBar {
+        bottom: 2rem;
+        left: 2rem;
+        font-size: 0.875rem;
+    }
+    
+    .menu-item {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .lg\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .lg\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error States */
+.success {
+    @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.error {
+    @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+.warning {
+    @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+/* Print Styles */
+@media print {
+    #cashierBar,
+    nav,
+    .nav-btn,
+    #loginModal,
+    #orderModal {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .page-content {
+        display: block !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .bg-gray-100 {
+        background-color: #1f2937;
+    }
+    
+    .bg-white {
+        background-color: #374151;
+    }
+    
+    .text-gray-600 {
+        color: #d1d5db;
+    }
+    
+    .text-gray-700 {
+        color: #e5e7eb;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus States */
+button:focus,
+input:focus,
+select:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .bg-blue-600 {
+        background-color: #000080;
+    }
+    
+    .text-white {
+        color: #ffffff;
+    }
+    
+    .border {
+        border-width: 2px;
+    }
+}
+
+/* Custom Utility Classes */
+.text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.box-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Currency Format */
+.currency {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Status Indicators */
+.status-active {
+    @apply bg-green-100 text-green-800;
+}
+
+.status-inactive {
+    @apply bg-gray-100 text-gray-800;
+}
+
+.status-warning {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-error {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Inventory Progress Bars */
+.progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+}
+
+.progress-fill {
+    @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+}
+
+/* Staff Time Tracking */
+.time-in {
+    @apply bg-green-100 text-green-800 border-l-4 border-green-500;
+}
+
+.time-out {
+    @apply bg-red-100 text-red-800 border-l-4 border-red-500;
+}
+
+.break-time {
+    @apply bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500;
+}
+
+/* Order Status */
+.order-pending {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.order-processing {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.order-completed {
+    @apply bg-green-100 text-green-800;
+}
+
+.order-cancelled {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Branch Selector */
+#branchSelector {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* Receipt Styles */
+.receipt {
+    @apply bg-white p-4 border border-gray-200;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.receipt-header {
+    @apply text-center border-b border-gray-300 pb-2 mb-4;
+}
+
+.receipt-items {
+    @apply space-y-1 mb-4;
+}
+
+.receipt-total {
+    @apply border-t border-gray-300 pt-2 font-bold;
+}
+
+/* Keyboard Shortcuts */
+.kbd {
+    @apply inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded;
+}
+
+/* Tooltip */
+.tooltip {
+    @apply relative;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 pointer-events-none transition-opacity duration-200;
+    white-space: nowrap;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+/* Notification Badge */
+.notification-badge {
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center;
+}
+
+/* Search Highlight */
+.search-highlight {
+    @apply bg-yellow-200;
+}
+
+/* Drag and Drop */
+.drag-over {
+    @apply border-2 border-dashed border-blue-400 bg-blue-50;
+}
+
+.dragging {
+    @apply opacity-50;
+}
+
+/* Loading Spinner */
+.spinner {
+    @apply inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+}
+
+/* Success Checkmark */
+.checkmark {
+    @apply inline-block w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center;
+}
+
+.checkmark::after {
+    content: '✓';
+    @apply text-sm font-bold;
+}
+
+/* Error X */
+.error-x {
+    @apply inline-block w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center;
+}
+
+.error-x::after {
+    content: '✕';
+    @apply text-sm font-bold;
+}
+
+/* Warning Triangle */
+.warning-triangle {
+    @apply inline-block w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center;
+}
+
+.warning-triangle::after {
+    content: '⚠';
+    @apply text-sm font-bold;
+} 
