@@ -19,6 +19,16 @@ CURRENCY = "PHP"
 LANGUAGE = "en"
 DEFAULT_LOCALE = "en-PH"
 
+# KV Namespace for caching and session storage
+[[kv_namespaces]]
+binding = "CACHE"
+id = "53480cdb256b4095ac269c95c8320104"
+
+# R2 Storage for file uploads (receipts, documents, etc.)
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "wt-pos-payroll-storage"
+
 # Environment-specific configurations
 [env.development]
 name = "wt-pos-payroll-saas-dev"
