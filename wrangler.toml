@@ -11,11 +11,6 @@ ENVIRONMENT = "production"
 COMPANY_NAME = "Your Company Name"
 JWT_EXPIRES_IN = "7d"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "wt-pos-payroll-db"
-database_id = "your-database-id-here"
-
 [[kv_namespaces]]
 binding = "CACHE"
 id = "53480cdb256b4095ac269c95c8320104"
