@@ -282,12 +282,22 @@ class POSSystem {
         const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const seniorDiscount = document.getElementById('seniorDiscount').checked ? subtotal * 0.20 : 0;
         const subtotalAfterDiscount = subtotal - seniorDiscount;
-        const vat = subtotalAfterDiscount * 0.12;
-        const total = subtotalAfterDiscount + vat;
+        
+        // Correct VAT calculation for Philippines (VAT-inclusive pricing)
+        // VAT = (subtotal / 1.12) * 0.12, not subtotal * 0.12
+        const vatExclusiveAmount = subtotalAfterDiscount / 1.12;
+        const vat = subtotalAfterDiscount - vatExclusiveAmount;
+        const total = subtotalAfterDiscount; // Total is the same as subtotal after discount in VAT-inclusive pricing
 
         document.getElementById('subtotal').textContent = `₱${subtotal.toFixed(2)}`;
         document.getElementById('vat').textContent = `₱${vat.toFixed(2)}`;
         document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
+        
+        // Display VAT-exclusive amount for transparency
+        const vatExclusiveDisplay = document.getElementById('vatExclusive');
+        if (vatExclusiveDisplay) {
+            vatExclusiveDisplay.textContent = `₱${vatExclusiveAmount.toFixed(2)}`;
+        }
     }
 
     async processOrder() {
