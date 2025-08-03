@@ -16,16 +16,30 @@ body {
 
 /* Navigation Styles */
 .nav-btn {
-    @apply flex flex-col items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
     min-width: 80px;
 }
 
 .nav-btn.active {
-    @apply bg-blue-600 text-white;
+    background-color: #2563eb;
+    color: white;
 }
 
 .nav-btn:not(.active) {
-    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.nav-btn:not(.active):hover {
+    background-color: #e5e7eb;
 }
 
 .nav-btn i {
@@ -44,15 +58,24 @@ body {
 
 /* Menu Categories */
 .category-btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 .category-btn.active {
-    @apply bg-blue-600 text-white;
+    background-color: #2563eb;
+    color: white;
 }
 
 .category-btn:not(.active) {
-    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.category-btn:not(.active):hover {
+    background-color: #d1d5db;
 }
 
 /* Menu Items */
@@ -74,7 +97,12 @@ body {
 
 /* Cart Items */
 .cart-item {
-    @apply flex items-center justify-between p-3 bg-gray-50 rounded-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
     animation: slideIn 0.3s ease-out;
 }
 
@@ -90,11 +118,21 @@ body {
 }
 
 .quantity-controls {
-    @apply flex items-center space-x-2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .quantity-btn {
-    @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: bold;
+    transition: all 0.2s;
 }
 
 .quantity-btn:hover {
@@ -224,15 +262,21 @@ body {
 
 /* Success/Error States */
 .success {
-    @apply bg-green-100 text-green-800 border border-green-200;
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
 }
 
 .error {
-    @apply bg-red-100 text-red-800 border border-red-200;
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
 }
 
 .warning {
-    @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fed7aa;
 }
 
 /* Print Styles */
@@ -326,58 +370,78 @@ select:focus {
 
 /* Status Indicators */
 .status-active {
-    @apply bg-green-100 text-green-800;
+    background-color: #dcfce7;
+    color: #166534;
 }
 
 .status-inactive {
-    @apply bg-gray-100 text-gray-800;
+    background-color: #f3f4f6;
+    color: #374151;
 }
 
 .status-warning {
-    @apply bg-yellow-100 text-yellow-800;
+    background-color: #fef3c7;
+    color: #92400e;
 }
 
 .status-error {
-    @apply bg-red-100 text-red-800;
+    background-color: #fee2e2;
+    color: #991b1b;
 }
 
 /* Inventory Progress Bars */
 .progress-bar {
-    @apply w-full bg-gray-200 rounded-full h-2;
+    width: 100%;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    height: 0.5rem;
 }
 
 .progress-fill {
-    @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+    background-color: #2563eb;
+    height: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.3s;
 }
 
 /* Staff Time Tracking */
 .time-in {
-    @apply bg-green-100 text-green-800 border-l-4 border-green-500;
+    background-color: #dcfce7;
+    color: #166534;
+    border-left: 4px solid #22c55e;
 }
 
 .time-out {
-    @apply bg-red-100 text-red-800 border-l-4 border-red-500;
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
 }
 
 .break-time {
-    @apply bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500;
+    background-color: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #eab308;
 }
 
 /* Order Status */
 .order-pending {
-    @apply bg-yellow-100 text-yellow-800;
+    background-color: #fef3c7;
+    color: #92400e;
 }
 
 .order-processing {
-    @apply bg-blue-100 text-blue-800;
+    background-color: #dbeafe;
+    color: #1e40af;
 }
 
 .order-completed {
-    @apply bg-green-100 text-green-800;
+    background-color: #dcfce7;
+    color: #166534;
 }
 
 .order-cancelled {
-    @apply bg-red-100 text-red-800;
+    background-color: #fee2e2;
+    color: #991b1b;
 }
 
 /* Branch Selector */
@@ -391,37 +455,68 @@ select:focus {
 
 /* Receipt Styles */
 .receipt {
-    @apply bg-white p-4 border border-gray-200;
+    background-color: white;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
     font-family: 'Courier New', monospace;
     font-size: 0.875rem;
     line-height: 1.4;
 }
 
 .receipt-header {
-    @apply text-center border-b border-gray-300 pb-2 mb-4;
+    text-align: center;
+    border-bottom: 1px solid #d1d5db;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .receipt-items {
-    @apply space-y-1 mb-4;
+    margin-bottom: 1rem;
+}
+
+.receipt-items > * + * {
+    margin-top: 0.25rem;
 }
 
 .receipt-total {
-    @apply border-t border-gray-300 pt-2 font-bold;
+    border-top: 1px solid #d1d5db;
+    padding-top: 0.5rem;
+    font-weight: bold;
 }
 
 /* Keyboard Shortcuts */
 .kbd {
-    @apply inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
 }
 
 /* Tooltip */
 .tooltip {
-    @apply relative;
+    position: relative;
 }
 
 .tooltip::after {
     content: attr(data-tooltip);
-    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 pointer-events-none transition-opacity duration-200;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    color: white;
+    background-color: #111827;
+    border-radius: 0.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
     white-space: nowrap;
 }
 
@@ -431,54 +526,99 @@ select:focus {
 
 /* Notification Badge */
 .notification-badge {
-    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center;
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 9999px;
+    height: 1.25rem;
+    width: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Search Highlight */
 .search-highlight {
-    @apply bg-yellow-200;
+    background-color: #fef08a;
 }
 
 /* Drag and Drop */
 .drag-over {
-    @apply border-2 border-dashed border-blue-400 bg-blue-50;
+    border: 2px dashed #60a5fa;
+    background-color: #eff6ff;
 }
 
 .dragging {
-    @apply opacity-50;
+    opacity: 0.5;
 }
 
 /* Loading Spinner */
 .spinner {
-    @apply inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #d1d5db;
+    border-top: 2px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 /* Success Checkmark */
 .checkmark {
-    @apply inline-block w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center;
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #22c55e;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .checkmark::after {
     content: '✓';
-    @apply text-sm font-bold;
+    font-size: 0.875rem;
+    font-weight: bold;
 }
 
 /* Error X */
 .error-x {
-    @apply inline-block w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center;
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error-x::after {
     content: '✕';
-    @apply text-sm font-bold;
+    font-size: 0.875rem;
+    font-weight: bold;
 }
 
 /* Warning Triangle */
 .warning-triangle {
-    @apply inline-block w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center;
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #eab308;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .warning-triangle::after {
     content: '⚠';
-    @apply text-sm font-bold;
+    font-size: 0.875rem;
+    font-weight: bold;
 } 

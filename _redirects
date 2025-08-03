@@ -1,0 +1,15 @@
+# Cloudflare Pages redirects
+# Redirect root to frontend/index.html
+/ /frontend/index.html 200
+
+# Handle API routes
+/api/* /api/:splat 200
+
+# Handle static assets
+/assets/* /frontend/assets/:splat 200
+
+# Handle service worker
+/sw.js /frontend/sw.js 200
+
+# Handle manifest
+/manifest.json /frontend/manifest.json 200 
