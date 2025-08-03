@@ -1,0 +1,28 @@
+{
+  "name": "wt-pos-payroll-frontend",
+  "version": "1.0.0",
+  "description": "WT POS & Payroll SaaS Frontend",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'",
+    "preview": "cd dist && python -m http.server 8000"
+  },
+  "keywords": [
+    "pos",
+    "payroll",
+    "frontend",
+    "cloudflare-pages"
+  ],
+  "author": "WiseTrack POS Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+} 
