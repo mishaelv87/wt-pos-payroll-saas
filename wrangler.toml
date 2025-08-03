@@ -1,44 +1,468 @@
-# Cloudflare Workers Configuration for WT POS & Payroll SaaS
-# This configuration uses the free tier of Cloudflare Workers and D1 Database
+# =============================================================================
+# WISETRACKS POS & PAYROLL SAAS - CLOUDFLARE WORKERS CONFIGURATION
+# =============================================================================
+# Complete Cloudflare Workers configuration with all bindings and environments
+# Last Updated: 2024-01-15
 
-name = "wt-pos-payroll-saas"
+# =============================================================================
+# MAIN CONFIGURATION
+# =============================================================================
+name = "wisetracks-pos-payroll"
 main = "src/worker.js"
 compatibility_date = "2024-01-15"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "streams_enable_constructors"]
+
+# =============================================================================
+# WORKER CONFIGURATION
+# =============================================================================
+# Worker execution limits
+workers_dev = true
+usage_model = "bundled"
 
 [vars]
+# Non-sensitive environment variables
+APP_NAME = "Wisetracks POS & Payroll SaaS"
+APP_VERSION = "2.0.0"
 ENVIRONMENT = "production"
-COMPANY_NAME = "Your Company Name"
-JWT_EXPIRES_IN = "7d"
+NODE_ENV = "production"
 
+# API Configuration
+API_VERSION = "v2"
+API_PREFIX = "/api/v2"
+API_DOCS_PATH = "/docs"
+API_HEALTH_PATH = "/health"
+API_METRICS_PATH = "/metrics"
+
+# JWT Configuration (non-sensitive)
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRES_IN = "4h"
+JWT_ISSUER = "wisetracks-pos-saas-prod"
+JWT_AUDIENCE = "wisetracks-users-prod"
+REFRESH_TOKEN_EXPIRES_IN = "7d"
+
+# Security Settings
+BCRYPT_ROUNDS = "14"
+PASSWORD_MIN_LENGTH = "12"
+SESSION_EXPIRES_IN = "8h"
+SESSION_SECURE = "true"
+SESSION_SAME_SITE = "strict"
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS = "900000"
+RATE_LIMIT_MAX_REQUESTS = "200"
+RATE_LIMIT_AUTH = "3/min"
+RATE_LIMIT_POS = "500/min"
+RATE_LIMIT_PAYROLL = "100/min"
+RATE_LIMIT_REPORTS = "50/min"
+
+# CORS Configuration
+CORS_ORIGIN = "https://pos.wisetracks.com"
+CORS_METHODS = "GET,POST,PUT,DELETE,OPTIONS"
+CORS_HEADERS = "Content-Type,Authorization,X-Requested-With"
+CORS_CREDENTIALS = "true"
+
+# Philippine Business Compliance (Endpoints)
+BIR_API_ENDPOINT = "https://cas.bir.gov.ph"
+BIR_WITHHOLDING_TAX_RATE = "0.01"
+SSS_API_ENDPOINT = "https://api.sss.gov.ph"
+SSS_CONTRIBUTION_RATE_EMPLOYEE = "0.045"
+SSS_CONTRIBUTION_RATE_EMPLOYER = "0.095"
+PHILHEALTH_API_ENDPOINT = "https://api.philhealth.gov.ph"
+PHILHEALTH_PREMIUM_RATE = "0.05"
+PHILHEALTH_MAX_SALARY = "90000"
+PAGIBIG_API_ENDPOINT = "https://api.pagibigfund.gov.ph"
+PAGIBIG_CONTRIBUTION_RATE = "0.02"
+PAGIBIG_MAX_SALARY = "5000"
+
+# Payroll Configuration
+MIN_WAGE_NCR = "610"
+MIN_WAGE_REGION_4A = "470"
+OVERTIME_RATE_REGULAR = "1.25"
+OVERTIME_RATE_HOLIDAY = "2.0"
+OVERTIME_RATE_RESTDAY = "1.30"
+THIRTEENTH_MONTH_MINIMUM = "7000"
+THIRTEENTH_MONTH_TAX_THRESHOLD = "90000"
+
+# Payment Processing (Endpoints)
+PAYMONGO_API_ENDPOINT = "https://api.paymongo.com/v1"
+GCASH_API_ENDPOINT = "https://api.gcash.com"
+MAYA_API_ENDPOINT = "https://pg.paymaya.com"
+
+# Email Configuration
+EMAIL_SERVICE = "cloudflare"
+EMAIL_FROM = "noreply@wisetracks.com"
+EMAIL_FROM_NAME = "Wisetracks POS System"
+
+# SMS Configuration
+SEMAPHORE_SENDER_NAME = "WISETRACKS"
+SEMAPHORE_API_ENDPOINT = "https://api.semaphore.co"
+
+# Logging & Monitoring
+LOG_LEVEL = "warn"
+LOG_FORMAT = "json"
+LOG_DESTINATION = "cloudflare"
+SENTRY_ENVIRONMENT = "production"
+SENTRY_RELEASE = "2.0.0"
+
+# Feature Flags
+ENABLE_MOBILE_APP = "true"
+ENABLE_INVENTORY_MODULE = "true"
+ENABLE_ACCOUNTING_MODULE = "true"
+ENABLE_HR_MODULE = "true"
+ENABLE_REPORTS_MODULE = "true"
+ENABLE_MULTI_BRANCH = "true"
+ENABLE_OFFLINE_MODE = "true"
+ENABLE_AI_INSIGHTS = "false"
+ENABLE_VOICE_COMMANDS = "false"
+ENABLE_BIOMETRIC_AUTH = "false"
+
+# Compliance & Audit
+AUDIT_LOG_RETENTION = "2555"
+AUDIT_LOG_ENCRYPTION = "true"
+BACKUP_FREQUENCY = "daily"
+BACKUP_RETENTION_DAYS = "90"
+
+# Caching
+CACHE_STATIC_FILES = "true"
+CACHE_API_RESPONSES = "true"
+CACHE_TTL_SHORT = "600"
+CACHE_TTL_MEDIUM = "7200"
+CACHE_TTL_LONG = "172800"
+
+# Localization
+DEFAULT_TIMEZONE = "Asia/Manila"
+DEFAULT_LOCALE = "en-PH"
+DEFAULT_CURRENCY = "PHP"
+CURRENCY_DECIMAL_PLACES = "2"
+DATE_FORMAT = "MM/DD/YYYY"
+TIME_FORMAT = "12h"
+
+# Security Headers
+CSP_DEFAULT_SRC = "'self'"
+CSP_SCRIPT_SRC = "'self' 'unsafe-inline' https://cdn.jsdelivr.net"
+CSP_STYLE_SRC = "'self' 'unsafe-inline' https://fonts.googleapis.com"
+CSP_IMG_SRC = "'self' data: https: blob:"
+CSP_FONT_SRC = "'self' https://fonts.gstatic.com"
+CSP_CONNECT_SRC = "'self' https://api.wisetracks.com wss:"
+X_FRAME_OPTIONS = "DENY"
+X_CONTENT_TYPE_OPTIONS = "nosniff"
+REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+# Health Check
+HEALTH_CHECK_INTERVAL = "60"
+HEALTH_CHECK_TIMEOUT = "30"
+HEALTH_CHECK_RETRIES = "3"
+
+# Error Handling
+ERROR_SHOW_STACK = "false"
+ERROR_LOG_DETAILED = "true"
+ERROR_NOTIFY_ADMIN = "true"
+ERROR_RETRY_ATTEMPTS = "3"
+
+# =============================================================================
+# D1 DATABASE BINDINGS
+# =============================================================================
+[[d1_databases]]
+binding = "DB"
+database_name = "wisetracks_pos_payroll_prod"
+database_id = "your-d1-database-id"
+
+[[d1_databases]]
+binding = "AUDIT_DB"
+database_name = "wisetracks_audit_prod"
+database_id = "your-audit-d1-database-id"
+
+# =============================================================================
+# KV NAMESPACE BINDINGS
+# =============================================================================
 [[kv_namespaces]]
 binding = "CACHE"
-id = "53480cdb256b4095ac269c95c8320104"
+id = "your-kv-namespace-id"
+preview_id = "your-kv-preview-namespace-id"
 
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "your-sessions-kv-namespace-id"
+preview_id = "your-sessions-kv-preview-namespace-id"
+
+[[kv_namespaces]]
+binding = "RATE_LIMITER"
+id = "your-rate-limiter-kv-namespace-id"
+preview_id = "your-rate-limiter-kv-preview-namespace-id"
+
+# =============================================================================
+# R2 BUCKET BINDINGS
+# =============================================================================
 [[r2_buckets]]
 binding = "STORAGE"
-bucket_name = "wt-pos-payroll-storage"
+bucket_name = "wisetracks-pos-storage"
+preview_bucket_name = "wisetracks-pos-storage-preview"
 
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "wisetracks-backups"
+preview_bucket_name = "wisetracks-backups-preview"
+
+[[r2_buckets]]
+binding = "RECEIPTS"
+bucket_name = "wisetracks-receipts"
+preview_bucket_name = "wisetracks-receipts-preview"
+
+# =============================================================================
+# DURABLE OBJECTS
+# =============================================================================
+[[durable_objects.bindings]]
+name = "WEBSOCKET_HANDLER"
+class_name = "WebSocketHandler"
+script_name = "wisetracks-pos-payroll"
+
+[[durable_objects.bindings]]
+name = "POS_SESSION"
+class_name = "POSSession"
+script_name = "wisetracks-pos-payroll"
+
+# =============================================================================
+# ANALYTICS ENGINE BINDINGS
+# =============================================================================
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "wisetracks_analytics"
+
+# =============================================================================
+# HYPERDRIVE BINDINGS (For Database Connection Pooling)
+# =============================================================================
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "your-hyperdrive-id"
+
+# =============================================================================
+# QUEUE BINDINGS
+# =============================================================================
+[[queues.producers]]
+binding = "EMAIL_QUEUE"
+queue = "wisetracks-email-queue"
+
+[[queues.producers]]
+binding = "PAYROLL_QUEUE"
+queue = "wisetracks-payroll-queue"
+
+[[queues.producers]]
+binding = "BACKUP_QUEUE"
+queue = "wisetracks-backup-queue"
+
+[[queues.consumers]]
+queue = "wisetracks-email-queue"
+max_batch_size = 10
+max_batch_timeout = 30
+
+[[queues.consumers]]
+queue = "wisetracks-payroll-queue"
+max_batch_size = 5
+max_batch_timeout = 60
+
+[[queues.consumers]]
+queue = "wisetracks-backup-queue"
+max_batch_size = 1
+max_batch_timeout = 300
+
+# =============================================================================
+# SERVICE BINDINGS
+# =============================================================================
+[[services]]
+binding = "PDF_GENERATOR"
+service = "wisetracks-pdf-generator"
+
+[[services]]
+binding = "EMAIL_SERVICE"
+service = "wisetracks-email-service"
+
+# =============================================================================
+# LIMITS AND CONSTRAINTS
+# =============================================================================
+[limits]
+cpu_ms = 50000
+
+# =============================================================================
+# BUILD CONFIGURATION
+# =============================================================================
 [build]
-command = "npm run build"
+command = "npm run build:worker"
+cwd = "."
+watch_dir = "src"
 
-# Environment-specific configurations
+# Upload rules for static assets
+[build.upload]
+format = "modules"
+dir = "./dist"
+main = "./index.js"
+
+# =============================================================================
+# DEVELOPMENT ENVIRONMENT
+# =============================================================================
 [env.development]
-name = "wt-pos-payroll-saas-dev"
-vars = { ENVIRONMENT = "development" }
+name = "wisetracks-pos-payroll-dev"
 
+[env.development.vars]
+ENVIRONMENT = "development"
+NODE_ENV = "development"
+JWT_EXPIRES_IN = "24h"
+LOG_LEVEL = "debug"
+LOG_FORMAT = "pretty"
+SENTRY_ENVIRONMENT = "development"
+CORS_ORIGIN = "*"
+RATE_LIMIT_MAX_REQUESTS = "1000"
+CACHE_STATIC_FILES = "false"
+CACHE_API_RESPONSES = "false"
+ERROR_SHOW_STACK = "true"
+BIR_API_ENDPOINT = "https://cas-sandbox.bir.gov.ph"
+SSS_API_ENDPOINT = "https://api-sandbox.sss.gov.ph"
+PHILHEALTH_API_ENDPOINT = "https://api-sandbox.philhealth.gov.ph"
+PAGIBIG_API_ENDPOINT = "https://api-sandbox.pagibigfund.gov.ph"
+MAYA_API_ENDPOINT = "https://pg-sandbox.paymaya.com"
+SEMAPHORE_API_ENDPOINT = "https://api-sandbox.semaphore.co"
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "wisetracks_pos_payroll_dev"
+database_id = "your-dev-d1-database-id"
+
+[[env.development.kv_namespaces]]
+binding = "CACHE"
+id = "your-dev-kv-namespace-id"
+preview_id = "your-dev-kv-preview-namespace-id"
+
+[[env.development.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "wisetracks-pos-storage-dev"
+preview_bucket_name = "wisetracks-pos-storage-dev-preview"
+
+# =============================================================================
+# STAGING ENVIRONMENT
+# =============================================================================
 [env.staging]
-name = "wt-pos-payroll-saas-staging"
-vars = { ENVIRONMENT = "staging" }
+name = "wisetracks-pos-payroll-staging"
 
-[env.production]
-name = "wt-pos-payroll-saas"
-vars = { ENVIRONMENT = "production" }
+[env.staging.vars]
+ENVIRONMENT = "staging"
+NODE_ENV = "production"
+JWT_EXPIRES_IN = "6h"
+LOG_LEVEL = "info"
+SENTRY_ENVIRONMENT = "staging"
+CORS_ORIGIN = "https://staging.wisetracks.com"
+RATE_LIMIT_MAX_REQUESTS = "150"
+ERROR_SHOW_STACK = "false"
+BIR_API_ENDPOINT = "https://cas-staging.bir.gov.ph"
+SSS_API_ENDPOINT = "https://api-staging.sss.gov.ph"
+PHILHEALTH_API_ENDPOINT = "https://api-staging.philhealth.gov.ph"
+PAGIBIG_API_ENDPOINT = "https://api-staging.pagibigfund.gov.ph"
 
-# Cron triggers for automated tasks
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "wisetracks_pos_payroll_staging"
+database_id = "your-staging-d1-database-id"
+
+[[env.staging.kv_namespaces]]
+binding = "CACHE"
+id = "your-staging-kv-namespace-id"
+preview_id = "your-staging-kv-preview-namespace-id"
+
+[[env.staging.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "wisetracks-pos-storage-staging"
+preview_bucket_name = "wisetracks-pos-storage-staging-preview"
+
+# =============================================================================
+# CRON TRIGGERS
+# =============================================================================
 [triggers]
 crons = [
-  "0 0 * * *",  # Daily at midnight - backup and maintenance
-  "0 6 * * 1",  # Weekly on Monday at 6 AM - payroll processing
-  "0 2 * * *"   # Daily at 2 AM - analytics aggregation
-] 
+  "0 0 * * *",     # Daily at midnight - backup and maintenance
+  "0 6 * * 1",     # Weekly on Monday at 6 AM - payroll processing
+  "0 2 * * *",     # Daily at 2 AM - analytics aggregation
+  "*/15 * * * *",  # Every 15 minutes - health checks
+  "0 4 * * 0",     # Weekly on Sunday at 4 AM - database optimization
+  "0 1 1 * *",     # Monthly on 1st at 1 AM - compliance reports
+  "0 3 15,30 * *", # Bi-monthly on 15th and 30th - payroll reminders
+]
+
+# =============================================================================
+# OBSERVABILITY
+# =============================================================================
+[observability]
+enabled = true
+
+# =============================================================================
+# COMPATIBILITY FLAGS
+# =============================================================================
+# Additional compatibility flags for enhanced functionality
+compatibility_flags = [
+  "nodejs_compat",
+  "streams_enable_constructors",
+  "formdata_parser_supports_files",
+  "durable_object_fetch_requires_full_url",
+  "r2_public_beta_bindings",
+  "service_binding_extra_handlers",
+]
+
+# =============================================================================
+# UNSAFE CONFIGURATION
+# =============================================================================
+[unsafe]
+# Allow unsafe eval for certain operations (use with caution)
+# unsafe_eval = false
+
+# =============================================================================
+# MIGRATION CONFIGURATION
+# =============================================================================
+[migrations]
+# Database migration settings
+tag = "v2.0.0"
+new_classes = ["WebSocketHandler", "POSSession"]
+
+# =============================================================================
+# SECRETS DOCUMENTATION
+# =============================================================================
+# The following secrets must be set using `wrangler secret put`:
+#
+# Core Security:
+# - JWT_SECRET: Main JWT signing secret (256-bit)
+# - REFRESH_TOKEN_SECRET: Refresh token signing secret (256-bit)
+# - SESSION_SECRET: Session encryption secret
+#
+# Philippine Government APIs:
+# - BIR_TIN: Business Tax Identification Number
+# - BIR_CAS_USERNAME: BIR CAS system username
+# - BIR_CAS_PASSWORD: BIR CAS system password
+# - SSS_EMPLOYER_ID: SSS Employer ID
+# - SSS_API_KEY: SSS API access key
+# - SSS_API_SECRET: SSS API secret
+# - PHILHEALTH_EMPLOYER_ID: PhilHealth Employer ID
+# - PHILHEALTH_API_KEY: PhilHealth API key
+# - PAGIBIG_EMPLOYER_ID: Pag-IBIG Employer ID
+# - PAGIBIG_API_KEY: Pag-IBIG API key
+#
+# Payment Processing:
+# - PAYMONGO_SECRET_KEY: PayMongo secret key
+# - PAYMONGO_WEBHOOK_SECRET: PayMongo webhook secret
+# - GCASH_MERCHANT_SECRET: GCash merchant secret
+# - MAYA_SECRET_KEY: Maya payment secret key
+#
+# Communication:
+# - SMTP_PASSWORD: Email SMTP password
+# - SEMAPHORE_API_KEY: SMS API key
+#
+# Monitoring:
+# - SENTRY_DSN: Error tracking DSN
+#
+# Compliance:
+# - DPA_ENCRYPTION_KEY: Data privacy encryption key
+# - BACKUP_ENCRYPTION_KEY: Backup encryption key
+#
+# Third-party Integrations:
+# - GOOGLE_CLIENT_SECRET: Google OAuth client secret
+# - MICROSOFT_CLIENT_SECRET: Microsoft OAuth client secret
+#
+# Set secrets using:
+# wrangler secret put SECRET_NAME --env production
+# wrangler secret put SECRET_NAME --env staging
+# wrangler secret put SECRET_NAME --env development 
