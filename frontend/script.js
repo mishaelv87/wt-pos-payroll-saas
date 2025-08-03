@@ -8,6 +8,9 @@ class POSSystem {
         this.isLoggedIn = false;
         this.orderNumber = 1000;
         
+        // API Configuration
+        this.API_BASE_URL = 'https://wt-pos-payroll-saas.mishaelvallar.workers.dev';
+        
         this.init();
     }
 
@@ -16,9 +19,45 @@ class POSSystem {
         this.updateDateTime();
         this.checkLoginStatus();
         this.setupKeyboardShortcuts();
+        this.testApiConnection();
         
         // Update datetime every second
         setInterval(() => this.updateDateTime(), 1000);
+    }
+
+    // Test API connection
+    async testApiConnection() {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/health`);
+            const data = await response.json();
+            console.log('✅ API Connection successful:', data);
+            this.showNotification('API connected successfully', 'success');
+        } catch (error) {
+            console.error('❌ API Connection failed:', error);
+            this.showNotification('API connection failed - using offline mode', 'warning');
+        }
+    }
+
+    // API helper methods
+    async apiCall(endpoint, options = {}) {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
     }
 
     setupEventListeners() {
@@ -251,7 +290,7 @@ class POSSystem {
         document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
     }
 
-    processOrder() {
+    async processOrder() {
         if (this.cart.length === 0) {
             this.showNotification('Cart is empty', 'error');
             return;
@@ -273,24 +312,78 @@ class POSSystem {
         const vat = subtotalAfterDiscount * 0.12;
         const total = subtotalAfterDiscount + vat;
 
-        // Update order modal
-        document.getElementById('orderNumber').textContent = orderNumber;
-        document.getElementById('orderSummary').innerHTML = this.cart.map(item => 
-            `<div class="flex justify-between">
-                <span>${item.name} × ${item.quantity}</span>
-                <span>₱${(item.price * item.quantity).toFixed(2)}</span>
-            </div>`
-        ).join('');
-        document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
+        // Prepare order data for API
+        const orderData = {
+            orderNumber: orderNumber,
+            items: this.cart.map(item => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity
+            })),
+            subtotal: subtotal,
+            vat: vat,
+            total: total,
+            staffId: this.currentStaff?.id || 'unknown',
+            branch: this.currentBranch,
+            paymentMethod: 'cash', // Default payment method
+            customerInfo: {
+                name: 'Walk-in Customer',
+                phone: '',
+                email: ''
+            }
+        };
 
-        // Show order modal
-        document.getElementById('orderModal').classList.remove('hidden');
+        try {
+            // Send order to API
+            const response = await this.apiCall('/api/orders', {
+                method: 'POST',
+                body: JSON.stringify(orderData)
+            });
 
-        // Clear cart
-        this.clearCart();
+            this.showNotification('Order processed successfully!', 'success');
+            
+            // Update order modal
+            document.getElementById('orderNumber').textContent = orderNumber;
+            document.getElementById('orderSummary').innerHTML = this.cart.map(item => 
+                `<div class="flex justify-between">
+                    <span>${item.name} × ${item.quantity}</span>
+                    <span>₱${(item.price * item.quantity).toFixed(2)}</span>
+                </div>`
+            ).join('');
+            document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
 
-        // Log order
-        this.logOrder(orderNumber, total);
+            // Show order modal
+            document.getElementById('orderModal').classList.remove('hidden');
+
+            // Clear cart
+            this.clearCart();
+
+            // Log order locally
+            this.logOrder(orderNumber, total);
+            
+        } catch (error) {
+            console.error('Failed to process order:', error);
+            this.showNotification('Failed to process order - using offline mode', 'warning');
+            
+            // Fallback to local processing
+            document.getElementById('orderNumber').textContent = orderNumber;
+            document.getElementById('orderSummary').innerHTML = this.cart.map(item => 
+                `<div class="flex justify-between">
+                    <span>${item.name} × ${item.quantity}</span>
+                    <span>₱${(item.price * item.quantity).toFixed(2)}</span>
+                </div>`
+            ).join('');
+            document.getElementById('orderTotal').textContent = `₱${total.toFixed(2)}`;
+
+            // Show order modal
+            document.getElementById('orderModal').classList.remove('hidden');
+
+            // Clear cart
+            this.clearCart();
+
+            // Log order
+            this.logOrder(orderNumber, total);
+        }
     }
 
     clearCart() {
