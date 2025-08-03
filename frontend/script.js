@@ -7,6 +7,7 @@ class POSSystem {
         this.currentBranch = 'vito-cruz';
         this.isLoggedIn = false;
         this.orderNumber = 1000;
+        this.dateTimeInterval = null; // Store interval reference
         
         // API Configuration
         this.API_BASE_URL = 'https://wt-pos-payroll-saas.mishaelvallar.workers.dev';
@@ -21,8 +22,11 @@ class POSSystem {
         this.setupKeyboardShortcuts();
         this.testApiConnection();
         
-        // Update datetime every second
-        setInterval(() => this.updateDateTime(), 1000);
+        // Update datetime every second and store interval reference
+        this.dateTimeInterval = setInterval(() => this.updateDateTime(), 1000);
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => this.cleanup());
     }
 
     // Test API connection
@@ -249,15 +253,15 @@ class POSSystem {
         }
 
         cartContainer.innerHTML = this.cart.map(item => `
-            <div class="cart-item" data-name="${item.name}">
+            <div class="cart-item" data-name="${this.escapeHtml(item.name)}">
                 <div class="flex-1">
-                    <div class="font-semibold">${item.name}</div>
+                    <div class="font-semibold">${this.escapeHtml(item.name)}</div>
                     <div class="text-sm text-gray-600">₱${item.price.toFixed(2)} × ${item.quantity}</div>
                 </div>
                 <div class="quantity-controls">
-                    <button class="quantity-btn bg-red-500 text-white hover:bg-red-600" onclick="posSystem.updateQuantity('${item.name}', -1)">-</button>
+                    <button class="quantity-btn bg-red-500 text-white hover:bg-red-600" onclick="posSystem.updateQuantity('${this.escapeHtml(item.name)}', -1)">-</button>
                     <span class="font-semibold min-w-[2rem] text-center">${item.quantity}</span>
-                    <button class="quantity-btn bg-green-500 text-white hover:bg-green-600" onclick="posSystem.updateQuantity('${item.name}', 1)">+</button>
+                    <button class="quantity-btn bg-green-500 text-white hover:bg-green-600" onclick="posSystem.updateQuantity('${this.escapeHtml(item.name)}', 1)">+</button>
                 </div>
             </div>
         `).join('');
@@ -315,12 +319,15 @@ class POSSystem {
         this.orderNumber++;
         const orderNumber = `ORD-${this.orderNumber.toString().padStart(5, '0')}`;
 
-        // Calculate totals
+        // Calculate totals using the same logic as updateCartTotals
         const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const seniorDiscount = document.getElementById('seniorDiscount').checked ? subtotal * 0.20 : 0;
         const subtotalAfterDiscount = subtotal - seniorDiscount;
-        const vat = subtotalAfterDiscount * 0.12;
-        const total = subtotalAfterDiscount + vat;
+        
+        // Use correct VAT calculation (VAT-inclusive pricing)
+        const vatExclusiveAmount = subtotalAfterDiscount / 1.12;
+        const vat = subtotalAfterDiscount - vatExclusiveAmount;
+        const total = subtotalAfterDiscount;
 
         // Prepare order data for API
         const orderData = {
@@ -356,7 +363,7 @@ class POSSystem {
             document.getElementById('orderNumber').textContent = orderNumber;
             document.getElementById('orderSummary').innerHTML = this.cart.map(item => 
                 `<div class="flex justify-between">
-                    <span>${item.name} × ${item.quantity}</span>
+                    <span>${this.escapeHtml(item.name)} × ${item.quantity}</span>
                     <span>₱${(item.price * item.quantity).toFixed(2)}</span>
                 </div>`
             ).join('');
@@ -365,11 +372,11 @@ class POSSystem {
             // Show order modal
             document.getElementById('orderModal').classList.remove('hidden');
 
+            // Log order locally before clearing cart
+            this.logOrder(orderNumber, total, this.cart);
+
             // Clear cart
             this.clearCart();
-
-            // Log order locally
-            this.logOrder(orderNumber, total);
             
         } catch (error) {
             console.error('Failed to process order:', error);
@@ -379,7 +386,7 @@ class POSSystem {
             document.getElementById('orderNumber').textContent = orderNumber;
             document.getElementById('orderSummary').innerHTML = this.cart.map(item => 
                 `<div class="flex justify-between">
-                    <span>${item.name} × ${item.quantity}</span>
+                    <span>${this.escapeHtml(item.name)} × ${item.quantity}</span>
                     <span>₱${(item.price * item.quantity).toFixed(2)}</span>
                 </div>`
             ).join('');
@@ -388,11 +395,11 @@ class POSSystem {
             // Show order modal
             document.getElementById('orderModal').classList.remove('hidden');
 
+            // Log order before clearing cart
+            this.logOrder(orderNumber, total, this.cart);
+
             // Clear cart
             this.clearCart();
-
-            // Log order
-            this.logOrder(orderNumber, total);
         }
     }
 
@@ -425,6 +432,16 @@ class POSSystem {
             document.getElementById('loginModal').classList.add('hidden');
             this.showNotification('Login successful', 'success');
             
+            // Store login session securely (exclude sensitive data)
+            const sessionData = {
+                id: this.currentStaff.id,
+                name: this.currentStaff.name,
+                position: this.currentStaff.position,
+                branch: this.currentStaff.branch,
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('currentStaff', JSON.stringify(sessionData));
+            
             // Auto time in
             this.timeIn();
         } else {
@@ -436,6 +453,9 @@ class POSSystem {
         if (this.currentStaff) {
             this.timeOut();
         }
+        
+        // Clear sensitive data from localStorage
+        localStorage.removeItem('currentStaff');
         
         this.currentStaff = null;
         this.isLoggedIn = false;
@@ -497,8 +517,8 @@ class POSSystem {
         if (staff) {
             statusDiv.innerHTML = `
                 <div class="text-center">
-                    <div class="font-semibold">${staff.name}</div>
-                    <div class="text-sm text-gray-600">${staff.position}</div>
+                    <div class="font-semibold">${this.escapeHtml(staff.name)}</div>
+                    <div class="text-sm text-gray-600">${this.escapeHtml(staff.position)}</div>
                     <div class="text-sm text-green-600 mt-2">Active</div>
                 </div>
             `;
@@ -537,10 +557,16 @@ class POSSystem {
         // Check if user is already logged in (from localStorage)
         const savedStaff = localStorage.getItem('currentStaff');
         if (savedStaff) {
-            this.currentStaff = JSON.parse(savedStaff);
-            this.isLoggedIn = true;
-            this.updateCashierDisplay();
-            document.getElementById('loginModal').classList.add('hidden');
+            try {
+                this.currentStaff = JSON.parse(savedStaff);
+                this.isLoggedIn = true;
+                this.updateCashierDisplay();
+                document.getElementById('loginModal').classList.add('hidden');
+            } catch (error) {
+                console.error('Error parsing saved staff data:', error);
+                localStorage.removeItem('currentStaff'); // Clear corrupted data
+                this.showNotification('Login session corrupted, please login again', 'warning');
+            }
         }
     }
 
@@ -557,7 +583,7 @@ class POSSystem {
         notification.innerHTML = `
             <div class="flex items-center">
                 <span class="mr-2">${this.getNotificationIcon(type)}</span>
-                <span>${message}</span>
+                <span>${this.escapeHtml(message)}</span>
             </div>
         `;
 
@@ -578,25 +604,49 @@ class POSSystem {
         }
     }
 
-    logOrder(orderNumber, total) {
+    logOrder(orderNumber, total, cartItems = []) {
         const order = {
             orderNumber,
             total,
-            items: this.cart,
+            items: cartItems.length > 0 ? cartItems : this.cart,
             staff: this.currentStaff,
             branch: this.currentBranch,
             timestamp: new Date().toISOString()
         };
 
         // Save to localStorage for demo
-        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        orders.push(order);
-        localStorage.setItem('orders', JSON.stringify(orders));
+        try {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+        } catch (error) {
+            console.error('Error saving order to localStorage:', error);
+            // Initialize with new array if corrupted
+            localStorage.setItem('orders', JSON.stringify([order]));
+        }
 
         console.log('Order logged:', order);
     }
 
+    // Cleanup method to prevent memory leaks
+    cleanup() {
+        if (this.dateTimeInterval) {
+            clearInterval(this.dateTimeInterval);
+            this.dateTimeInterval = null;
+        }
+    }
+
     // Utility functions
+    escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') return unsafe;
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     formatCurrency(amount) {
         return new Intl.NumberFormat('en-PH', {
             style: 'currency',
@@ -683,15 +733,20 @@ function printReceipt(order) {
 
 // Data export functionality
 function exportData() {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const dataStr = JSON.stringify(orders, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `pos-data-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const dataStr = JSON.stringify(orders, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `pos-data-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        alert('Error exporting data. Please try again.');
+    }
 }
 
 // Import data functionality
