@@ -50,30 +50,13 @@ vars = { ENVIRONMENT = "staging" }
 name = "wt-pos-payroll-saas"
 vars = { ENVIRONMENT = "production" }
 
-# Build configuration
+# Build configuration for Pages
 [build]
 command = "npm run build"
 
-# Deployment settings
-[build.upload]
-format = "service-worker"
+# Pages build output directory
+pages_build_output_dir = "frontend"
 
-# Route configuration for custom domain
-# Uncomment and configure when you have a custom domain
-# [[routes]]
-# pattern = "your-domain.com/*"
-# zone_name = "your-domain.com"
-
-# Cron triggers for automated tasks
-[triggers]
-crons = [
-  "0 0 * * *",  # Daily at midnight - backup and maintenance
-  "0 6 * * 1",  # Weekly on Monday at 6 AM - payroll processing
-  "0 2 * * *"   # Daily at 2 AM - analytics aggregation
-]
-
-# Security headers
-[headers]
 # Security headers for all responses
 [[headers]]
 for = "/*"
@@ -102,35 +85,4 @@ Expires = "0"
 [dev]
 port = 8787
 local = true
-persist = true
-
-# Miniflare configuration for local development
-[miniflare]
-kv_persist = true
-d1_persist = true
-r2_persist = true
-
-# Logging configuration
-[log]
-level = "info"
-
-# Performance settings
-[performance]
-# Enable streaming responses for better performance
-streaming = true
-
-# Error handling
-[error]
-# Custom error pages
-404 = "/404.html"
-500 = "/500.html"
-
-# Analytics and monitoring
-[analytics]
-# Enable Cloudflare Analytics (free tier)
-enabled = true
-
-# Web Analytics
-[web_analytics]
-# Enable Web Analytics (free tier)
-enabled = true 
+persist = true 
