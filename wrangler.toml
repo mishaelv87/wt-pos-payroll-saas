@@ -163,12 +163,12 @@ ERROR_RETRY_ATTEMPTS = "3"
 # D1 DATABASE BINDINGS
 # =============================================================================
 [[d1_databases]]
-binding = "DB"
+binding = "WISETRACKS_MAIN_DB"
 database_name = "wisetracks_pos_payroll_prod"
 database_id = "your-d1-database-id"
 
 [[d1_databases]]
-binding = "AUDIT_DB"
+binding = "WISETRACKS_AUDIT_DB"
 database_name = "wisetracks_audit_prod"
 database_id = "your-audit-d1-database-id"
 
@@ -176,17 +176,17 @@ database_id = "your-audit-d1-database-id"
 # KV NAMESPACE BINDINGS
 # =============================================================================
 [[kv_namespaces]]
-binding = "CACHE"
+binding = "WISETRACKS_CACHE_KV"
 id = "your-kv-namespace-id"
 preview_id = "your-kv-preview-namespace-id"
 
 [[kv_namespaces]]
-binding = "SESSIONS"
+binding = "WISETRACKS_SESSIONS_KV"
 id = "your-sessions-kv-namespace-id"
 preview_id = "your-sessions-kv-preview-namespace-id"
 
 [[kv_namespaces]]
-binding = "RATE_LIMITER"
+binding = "WISETRACKS_RATELIMIT_KV"
 id = "your-rate-limiter-kv-namespace-id"
 preview_id = "your-rate-limiter-kv-preview-namespace-id"
 
@@ -194,17 +194,17 @@ preview_id = "your-rate-limiter-kv-preview-namespace-id"
 # R2 BUCKET BINDINGS
 # =============================================================================
 [[r2_buckets]]
-binding = "STORAGE"
+binding = "WISETRACKS_MAIN_STORAGE"
 bucket_name = "wisetracks-pos-storage"
 preview_bucket_name = "wisetracks-pos-storage-preview"
 
 [[r2_buckets]]
-binding = "BACKUPS"
+binding = "WISETRACKS_BACKUP_STORAGE"
 bucket_name = "wisetracks-backups"
 preview_bucket_name = "wisetracks-backups-preview"
 
 [[r2_buckets]]
-binding = "RECEIPTS"
+binding = "WISETRACKS_RECEIPT_STORAGE"
 bucket_name = "wisetracks-receipts"
 preview_bucket_name = "wisetracks-receipts-preview"
 
@@ -212,56 +212,56 @@ preview_bucket_name = "wisetracks-receipts-preview"
 # DURABLE OBJECTS
 # =============================================================================
 [[durable_objects.bindings]]
-name = "WEBSOCKET_HANDLER"
-class_name = "WebSocketHandler"
+name = "WISETRACKS_WEBSOCKET_DO"
+class_name = "WisetracksWebSocketHandler"
 script_name = "wisetracks-pos-payroll"
 
 [[durable_objects.bindings]]
-name = "POS_SESSION"
-class_name = "POSSession"
+name = "WISETRACKS_POS_SESSION_DO"
+class_name = "WisetracksPOSSession"
 script_name = "wisetracks-pos-payroll"
 
 # =============================================================================
 # ANALYTICS ENGINE BINDINGS
 # =============================================================================
 [[analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "wisetracks_analytics"
+binding = "WISETRACKS_ANALYTICS_AE"
+dataset = "wisetracks_pos_analytics"
 
 # =============================================================================
 # HYPERDRIVE BINDINGS (For Database Connection Pooling)
 # =============================================================================
 # [[hyperdrive]]
-# binding = "HYPERDRIVE"
+# binding = "WISETRACKS_HYPERDRIVE"
 # id = "your-hyperdrive-id"
 
 # =============================================================================
 # QUEUE BINDINGS
 # =============================================================================
 [[queues.producers]]
-binding = "EMAIL_QUEUE"
-queue = "wisetracks-email-queue"
+binding = "WISETRACKS_EMAIL_QUEUE"
+queue = "wisetracks-pos-email-queue"
 
 [[queues.producers]]
-binding = "PAYROLL_QUEUE"
-queue = "wisetracks-payroll-queue"
+binding = "WISETRACKS_PAYROLL_QUEUE"
+queue = "wisetracks-pos-payroll-queue"
 
 [[queues.producers]]
-binding = "BACKUP_QUEUE"
-queue = "wisetracks-backup-queue"
+binding = "WISETRACKS_BACKUP_QUEUE"
+queue = "wisetracks-pos-backup-queue"
 
 [[queues.consumers]]
-queue = "wisetracks-email-queue"
+queue = "wisetracks-pos-email-queue"
 max_batch_size = 10
 max_batch_timeout = 30
 
 [[queues.consumers]]
-queue = "wisetracks-payroll-queue"
+queue = "wisetracks-pos-payroll-queue"
 max_batch_size = 5
 max_batch_timeout = 60
 
 [[queues.consumers]]
-queue = "wisetracks-backup-queue"
+queue = "wisetracks-pos-backup-queue"
 max_batch_size = 1
 max_batch_timeout = 300
 
@@ -269,12 +269,12 @@ max_batch_timeout = 300
 # SERVICE BINDINGS
 # =============================================================================
 [[services]]
-binding = "PDF_GENERATOR"
-service = "wisetracks-pdf-generator"
+binding = "WISETRACKS_PDF_SERVICE"
+service = "wisetracks-pos-pdf-generator"
 
 [[services]]
-binding = "EMAIL_SERVICE"
-service = "wisetracks-email-service"
+binding = "WISETRACKS_EMAIL_SERVICE"
+service = "wisetracks-pos-email-service"
 
 # =============================================================================
 # LIMITS AND CONSTRAINTS
@@ -322,17 +322,27 @@ MAYA_API_ENDPOINT = "https://pg-sandbox.paymaya.com"
 SEMAPHORE_API_ENDPOINT = "https://api-sandbox.semaphore.co"
 
 [[env.development.d1_databases]]
-binding = "DB"
+binding = "WISETRACKS_MAIN_DB"
 database_name = "wisetracks_pos_payroll_dev"
 database_id = "your-dev-d1-database-id"
 
+[[env.development.d1_databases]]
+binding = "WISETRACKS_AUDIT_DB"
+database_name = "wisetracks_audit_dev"
+database_id = "your-dev-audit-d1-database-id"
+
 [[env.development.kv_namespaces]]
-binding = "CACHE"
+binding = "WISETRACKS_CACHE_KV"
 id = "your-dev-kv-namespace-id"
 preview_id = "your-dev-kv-preview-namespace-id"
 
+[[env.development.kv_namespaces]]
+binding = "WISETRACKS_SESSIONS_KV"
+id = "your-dev-sessions-kv-namespace-id"
+preview_id = "your-dev-sessions-kv-preview-namespace-id"
+
 [[env.development.r2_buckets]]
-binding = "STORAGE"
+binding = "WISETRACKS_MAIN_STORAGE"
 bucket_name = "wisetracks-pos-storage-dev"
 preview_bucket_name = "wisetracks-pos-storage-dev-preview"
 
@@ -357,17 +367,27 @@ PHILHEALTH_API_ENDPOINT = "https://api-staging.philhealth.gov.ph"
 PAGIBIG_API_ENDPOINT = "https://api-staging.pagibigfund.gov.ph"
 
 [[env.staging.d1_databases]]
-binding = "DB"
+binding = "WISETRACKS_MAIN_DB"
 database_name = "wisetracks_pos_payroll_staging"
 database_id = "your-staging-d1-database-id"
 
+[[env.staging.d1_databases]]
+binding = "WISETRACKS_AUDIT_DB"
+database_name = "wisetracks_audit_staging"
+database_id = "your-staging-audit-d1-database-id"
+
 [[env.staging.kv_namespaces]]
-binding = "CACHE"
+binding = "WISETRACKS_CACHE_KV"
 id = "your-staging-kv-namespace-id"
 preview_id = "your-staging-kv-preview-namespace-id"
 
+[[env.staging.kv_namespaces]]
+binding = "WISETRACKS_SESSIONS_KV"
+id = "your-staging-sessions-kv-namespace-id"
+preview_id = "your-staging-sessions-kv-preview-namespace-id"
+
 [[env.staging.r2_buckets]]
-binding = "STORAGE"
+binding = "WISETRACKS_MAIN_STORAGE"
 bucket_name = "wisetracks-pos-storage-staging"
 preview_bucket_name = "wisetracks-pos-storage-staging-preview"
 
