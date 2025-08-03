@@ -54,8 +54,19 @@ vars = { ENVIRONMENT = "production" }
 [build]
 command = "npm run build"
 
-# Pages build output directory
-pages_build_output_dir = "frontend"
+# Route configuration for custom domain
+# Uncomment and configure when you have a custom domain
+# [[routes]]
+# pattern = "your-domain.com/*"
+# zone_name = "your-domain.com"
+
+# Cron triggers for automated tasks
+[triggers]
+crons = [
+  "0 0 * * *",  # Daily at midnight - backup and maintenance
+  "0 6 * * 1",  # Weekly on Monday at 6 AM - payroll processing
+  "0 2 * * *"   # Daily at 2 AM - analytics aggregation
+]
 
 # Security headers for all responses
 [[headers]]
@@ -81,8 +92,6 @@ Cache-Control = "no-cache, no-store, must-revalidate"
 Pragma = "no-cache"
 Expires = "0"
 
-# Development settings
-[dev]
-port = 8787
-local = true
-persist = true 
+# Pages configuration
+[pages]
+build_output_dir = "frontend" 
