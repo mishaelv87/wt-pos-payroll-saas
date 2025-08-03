@@ -26,6 +26,7 @@
     "deploy:backend": "wrangler deploy",
     "deploy:frontend": "wrangler pages deploy frontend",
     "test:deployment": "node scripts/health-check.js",
+    "test:env-setup": "node scripts/test-env-setup.js",
     "verify:deployment": "node scripts/health-check.js",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
