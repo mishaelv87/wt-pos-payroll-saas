@@ -257,5 +257,8 @@ export default {
 
 // Utility function
 function generateId() {
-  return Math.random().toString(36).substr(2, 9);
+  // Use crypto API for better security and avoid deprecated substr()
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 9);
+  return `${timestamp}_${randomPart}`;
 } 

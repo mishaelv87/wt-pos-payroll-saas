@@ -1,7 +1,8 @@
 // Service Worker for CBTB POS System
-const CACHE_NAME = 'cbtb-pos-v1';
-const STATIC_CACHE = 'cbtb-pos-static-v1';
-const DYNAMIC_CACHE = 'cbtb-pos-dynamic-v1';
+const VERSION = 'v1.0.1';
+const CACHE_NAME = `cbtb-pos-${VERSION}`;
+const STATIC_CACHE = `cbtb-pos-static-${VERSION}`;
+const DYNAMIC_CACHE = `cbtb-pos-dynamic-${VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
@@ -39,7 +40,8 @@ self.addEventListener('activate', (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            // Keep only current version caches
+            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE && cacheName !== CACHE_NAME) {
               console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }

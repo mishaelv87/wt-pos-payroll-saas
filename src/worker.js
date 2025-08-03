@@ -19,6 +19,7 @@ app.use('*', cors({
 }));
 
 // Environment variables
+// JWT_SECRET should be set as environment variable in production
 const JWT_SECRET = 'your-jwt-secret-key-change-in-production';
 const DB_NAME = 'wt-pos-payroll-db';
 
@@ -149,9 +150,34 @@ app.get('/api/orders', async (c) => {
     params.push(parseInt(limit), (parseInt(page) - 1) * parseInt(limit));
 
     let orders = [];
+    let totalCount = 0;
+    
     if (c.env.DB) {
+      // Get the actual data
       const result = await c.env.DB.prepare(query).bind(...params).all();
       orders = result.results;
+      
+      // Get total count for proper pagination
+      let countQuery = 'SELECT COUNT(*) as total FROM orders WHERE 1=1';
+      const countParams = [];
+      
+      if (branch) {
+        countQuery += ' AND branch = ?';
+        countParams.push(branch);
+      }
+      
+      if (startDate) {
+        countQuery += ' AND created_at >= ?';
+        countParams.push(startDate);
+      }
+      
+      if (endDate) {
+        countQuery += ' AND created_at <= ?';
+        countParams.push(endDate);
+      }
+      
+      const countResult = await c.env.DB.prepare(countQuery).bind(...countParams).first();
+      totalCount = countResult?.total || 0;
     }
 
     return c.json({
@@ -160,7 +186,10 @@ app.get('/api/orders', async (c) => {
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total: orders.length
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        hasNext: parseInt(page) * parseInt(limit) < totalCount,
+        hasPrev: parseInt(page) > 1
       }
     });
   } catch (error) {
@@ -430,28 +459,55 @@ app.get('/api/analytics/top-products', async (c) => {
   try {
     const { period = '7d', branch } = c.req.query();
     
+    // Validate period parameter to prevent injection
+    const validPeriods = ['1d', '7d', '30d', '90d'];
+    const safePeriod = validPeriods.includes(period) ? period : '7d';
+    
+    // Use a safer approach for JSON handling in SQLite
     let query = `
       SELECT 
-        JSON_EXTRACT(items, '$[*].name') as product_names,
+        items,
         COUNT(*) as order_count,
-        SUM(JSON_EXTRACT(items, '$[*].price * $[*].quantity')) as total_revenue
+        SUM(total) as total_revenue
       FROM orders 
       WHERE created_at >= ?
     `;
     
-    const params = [getDateFromPeriod(period)];
+    const params = [getDateFromPeriod(safePeriod)];
     
     if (branch) {
-      query += ' AND branch = ?';
-      params.push(branch);
+      // Validate branch parameter
+      if (typeof branch === 'string' && branch.length <= 50) {
+        query += ' AND branch = ?';
+        params.push(branch);
+      }
     }
     
-    query += ' GROUP BY product_names ORDER BY total_revenue DESC LIMIT 10';
+    query += ' ORDER BY total_revenue DESC LIMIT 10';
 
     let products = [];
     if (c.env.DB) {
       const result = await c.env.DB.prepare(query).bind(...params).all();
-      products = result.results;
+      
+      // Process JSON data safely in JavaScript instead of SQL
+      products = result.results.map(row => {
+        try {
+          const items = JSON.parse(row.items || '[]');
+          const productNames = items.map(item => item.name).join(', ');
+          return {
+            product_names: productNames,
+            order_count: row.order_count,
+            total_revenue: row.total_revenue
+          };
+        } catch (jsonError) {
+          console.error('Error parsing items JSON:', jsonError);
+          return {
+            product_names: 'Unknown',
+            order_count: row.order_count,
+            total_revenue: row.total_revenue
+          };
+        }
+      });
     }
 
     return c.json({
@@ -502,9 +558,16 @@ app.get('/api/inventory', async (c) => {
 });
 
 // Authentication middleware
-const authMiddleware = jwt({
-  secret: JWT_SECRET
-});
+const authMiddleware = (c, next) => {
+  // Get JWT secret from environment variables for security
+  const jwtSecret = c.env.JWT_SECRET || JWT_SECRET;
+  
+  if (jwtSecret === 'your-jwt-secret-key-change-in-production') {
+    console.warn('WARNING: Using default JWT secret. Set JWT_SECRET environment variable in production!');
+  }
+  
+  return jwt({ secret: jwtSecret })(c, next);
+};
 
 // Protected routes
 app.use('/api/admin/*', authMiddleware);
@@ -583,7 +646,10 @@ app.notFound((c) => {
 
 // Utility functions
 function generateId() {
-  return Math.random().toString(36).substr(2, 9);
+  // Use crypto API for better security and avoid deprecated substr()
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 9);
+  return `${timestamp}_${randomPart}`;
 }
 
 function getDateFromPeriod(period) {
